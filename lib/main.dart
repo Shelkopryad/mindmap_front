@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'check_item.dart';
+// import 'check_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,12 +28,42 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-List<ItemToCheck> items = [];
+class PriorityItem {
+  final String description;
+  final List<String> tags;
+
+  PriorityItem({required this.description, required this.tags});
+
+  factory PriorityItem.fromJson(Map<String, dynamic> json) {
+    final description = json.keys.first;
+    final tags = json[description].cast<String>();
+    return PriorityItem(description: description, tags: tags);
+  }
+}
+
+class PriorityList {
+  final List<PriorityItem> lowPriority;
+  final List<PriorityItem> highPriority;
+
+  PriorityList({required this.lowPriority, required this.highPriority});
+
+  factory PriorityList.fromJson(Map<String, dynamic> json) {
+    final lowPriorityJson = json['low'].cast<Map<String, dynamic>>();
+    final highPriorityJson = json['high'].cast<Map<String, dynamic>>();
+
+    final lowPriority =
+        lowPriorityJson.map((item) => PriorityItem.fromJson(item)).toList();
+    final highPriority =
+        highPriorityJson.map((item) => PriorityItem.fromJson(item)).toList();
+
+    return PriorityList(lowPriority: lowPriority, highPriority: highPriority);
+  }
+}
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  String _result = '';
+  PriorityList? _priorityList;
 
   void _search() async {
     final String endpoint =
@@ -42,28 +72,20 @@ class _SearchPageState extends State<SearchPage> {
     try {
       final response = await http.get(Uri.parse(endpoint));
       if (response.statusCode == 200) {
-        // Парсинг JSON-ответа
-        List<dynamic> jsonData = json.decode(response.body);
+        final jsonData = json.decode(response.body);
+        final priorityList = PriorityList.fromJson(jsonData);
 
-        if (jsonData.isNotEmpty) {
-          items = jsonData.map((item) => ItemToCheck.fromJson(item)).toList();
-
-          setState(() {
-            _result = 'Найдено ${items.length} объектов';
-          });
-        } else {
-          setState(() {
-            _result = 'Нет данных';
-          });
-        }
+        setState(() {
+          _priorityList = priorityList;
+        });
       } else {
         setState(() {
-          _result = 'Ошибка: ${response.statusCode}';
+          _priorityList = null;
         });
       }
     } catch (e) {
       setState(() {
-        _result = 'Ошибка: $e';
+        _priorityList = null;
       });
     }
   }
@@ -93,21 +115,27 @@ class _SearchPageState extends State<SearchPage> {
               child: Text('Искать'),
             ),
             SizedBox(height: 16),
-            Text(_result), // Здесь отображается текстовый результат
-
-            // Вставьте ListView.builder здесь для отображения результатов поиска
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(items[index].itemToCheck),
-                    subtitle: Text(items[index].tags),
-                    // Здесь вы можете добавить другие поля для отображения
-                  );
-                },
-              ),
-            ),
+            if (_priorityList != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('High Priority:'),
+                  for (final item in _priorityList!.highPriority)
+                    ListTile(
+                      title: Text(item.description),
+                      subtitle: Text(item.tags.join(', ')),
+                    ),
+                  SizedBox(height: 16),
+                  Text('Low Priority:'),
+                  for (final item in _priorityList!.lowPriority)
+                    ListTile(
+                      title: Text(item.description),
+                      subtitle: Text(item.tags.join(', ')),
+                    ),
+                ],
+              )
+            else
+              Text('Результат: Нет данных или произошла ошибка'),
           ],
         ),
       ),
