@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'check_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,42 +30,14 @@ class SearchPage extends StatefulWidget {
 
 List<ItemToCheck> items = [];
 
-class ItemToCheck {
-  final int id;
-  final String itemToCheck;
-  final String tags;
-  final bool toTest;
-  final String createdAt;
-  final String updatedAt;
-
-  ItemToCheck({
-    required this.id,
-    required this.itemToCheck,
-    required this.tags,
-    required this.toTest,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory ItemToCheck.fromJson(Map<String, dynamic> json) {
-    return ItemToCheck(
-      id: json['id'],
-      itemToCheck: json['item_to_check'],
-      tags: json['tags'],
-      toTest: json['to_test'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-    );
-  }
-}
-
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _result = '';
 
   void _search() async {
-    final String endpoint = 'http://localhost:3000/check_items.json?query=$_searchQuery';
+    final String endpoint =
+        'http://localhost:3000/check_items.json?query=$_searchQuery';
 
     try {
       final response = await http.get(Uri.parse(endpoint));
@@ -141,4 +114,3 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
-
