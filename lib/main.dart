@@ -35,6 +35,7 @@ class PriorityItem {
   PriorityItem({required this.description, required this.tags});
 
   factory PriorityItem.fromJson(Map<String, dynamic> json) {
+    print(json);
     final description = json.keys.first;
     final tags = json[description].cast<String>();
     return PriorityItem(description: description, tags: tags);
@@ -48,8 +49,11 @@ class PriorityList {
   PriorityList({required this.lowPriority, required this.highPriority});
 
   factory PriorityList.fromJson(Map<String, dynamic> json) {
-    final lowPriorityJson = json['low'].cast<Map<String, dynamic>>();
-    final highPriorityJson = json['high'].cast<Map<String, dynamic>>();
+    final lowPriorityJson = json['low']; // .cast<List<Map<String, List<String>>>>();
+    final highPriorityJson = json['high']; // .cast<List<Map<String, dynamic>>>();
+
+    print(highPriorityJson);
+    highPriorityJson.forEach(print);
 
     final lowPriority =
         lowPriorityJson.map((item) => PriorityItem.fromJson(item)).toList();
