@@ -8,14 +8,16 @@ class AddNewItemPage extends StatelessWidget {
   final TextEditingController _addNewItemController = TextEditingController();
   final TextEditingController _addNewTagController = TextEditingController();
 
-  void _add_new_item(context, item_to_check, tags) async {
-    final String endpoint = 'http://localhost:3000/check_items/add_new.json';
+  AddNewItemPage({super.key});
+
+  void _add_new_item(context, itemToCheck, tags) async {
+    const String endpoint = 'http://localhost:3000/check_items/add_new.json';
 
     try {
       final response = await http.post(
         Uri.parse(endpoint),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"item_to_check": item_to_check, "tags": tags}),
+        body: jsonEncode({"item_to_check": itemToCheck, "tags": tags}),
       );
       if (response.statusCode == 204) {
         Navigator.push(
@@ -23,16 +25,14 @@ class AddNewItemPage extends StatelessWidget {
           MaterialPageRoute(builder: (context) => SearchPage()),
         );
       } else {}
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Item'),
+        title: const Text('Add New Item'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -42,25 +42,25 @@ class AddNewItemPage extends StatelessWidget {
           children: <Widget>[
             TextField(
               controller: _addNewItemController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Item to check',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _addNewTagController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Tags',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 var itemToCheck = _addNewItemController.text;
                 var tags = _addNewTagController.text;
                 _add_new_item(context, itemToCheck, tags);
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),

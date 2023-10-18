@@ -64,7 +64,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Поиск'),
+        title: const Text('Поиск'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,14 +73,14 @@ class _SearchPageState extends State<SearchPage> {
             alignment: Alignment.topLeft,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
+              child: FloatingActionButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddNewItemPage()),
                   );
                 },
-                child: Text('Add new'),
+                child: const Icon(Icons.add),
               ),
             ),
           ),
@@ -96,13 +96,13 @@ class _SearchPageState extends State<SearchPage> {
                         _searchQuery = value;
                       });
                     },
-                    decoration: InputDecoration(labelText: 'Поиск'),
+                    decoration: const InputDecoration(labelText: 'Поиск'),
                   ),
                 ),
-                SizedBox(width: 8),
-                ElevatedButton(
+                const SizedBox(width: 8),
+                FloatingActionButton(
                   onPressed: _search,
-                  child: Text('Искать'),
+                  child: const Icon(Icons.search),
                 ),
               ],
             ),
@@ -117,11 +117,11 @@ class _SearchPageState extends State<SearchPage> {
                     title: Text(item.description),
                     subtitle: Text(item.tags.join(', ')),
                   ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ))
           else
-            Text('Результат: Нет данных или произошла ошибка'),
+            const Text('Результат: Нет данных или произошла ошибка'),
         ],
       ),
     );
